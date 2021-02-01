@@ -16,7 +16,6 @@ public class CharacterMoveBehaviour : MonoBehaviour
 
     private void Update()
     {
-        Debug.Log(motion);
         controller.Move(motion * Time.deltaTime);
         if(controller.isGrounded){
             motion.y = 0;
@@ -59,7 +58,6 @@ public class CharacterMoveBehaviour : MonoBehaviour
 
     public void Jump()
     {
-        Debug.Log("Boing!");
         motion.y = jumpStrength.value;
     }
 
