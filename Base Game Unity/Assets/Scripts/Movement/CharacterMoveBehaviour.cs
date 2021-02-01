@@ -3,14 +3,24 @@
 [RequireComponent(typeof(CharacterController))]
 public class CharacterMoveBehaviour : MonoBehaviour
 {
-    public FloatData moveSpeed;
+    public FloatData moveSpeed, jumpStrength;
 
     private CharacterController controller;
-    private Vector3 inputDirection;
+    private Vector3 inputDirection, motion;
+    private float yVelocity;
 
     private void Start() 
     {
         controller = GetComponent<CharacterController>();
+    }
+
+    private void Update()
+    {
+        Debug.Log(motion);
+        controller.Move(motion * Time.deltaTime);
+        if(controller.isGrounded){
+            motion.y = 0;
+        }
     }
 
     public void InputMove()
@@ -27,18 +37,34 @@ public class CharacterMoveBehaviour : MonoBehaviour
 
     public void Move(Vector3 direction)
     {
-        transform.rotation = Quaternion.LookRotation(direction);
-        var rotation = transform.eulerAngles;
-        rotation.x = 0f;
-        rotation.z = 0f;
+        motion.x = 0;
+        motion.z = 0;
+        motion += direction * (moveSpeed.value);
 
-        var motion = direction * (moveSpeed.value * Time.deltaTime);
-        controller.Move(motion);
-
+        if(direction.sqrMagnitude > 0.1f){
+            transform.rotation = Quaternion.LookRotation(direction);
+            var rotation = transform.eulerAngles;
+            rotation.x = 0f;
+            rotation.z = 0f;
+        }
     }
 
-    public void MoveTo(Vector3 destination)
+    public void InputJump()
     {
+        if(Input.GetButtonDown("Jump"))
+        {
+            Jump();
+        }
+    }
 
+    public void Jump()
+    {
+        Debug.Log("Boing!");
+        motion.y = jumpStrength.value;
+    }
+
+    public void Fall()
+    {
+        motion.y += Physics.gravity.y * Time.deltaTime;
     }
 }
