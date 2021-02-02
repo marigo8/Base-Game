@@ -1,19 +1,32 @@
-﻿using System.Collections;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 public class InteractionEventBehaviour : TriggerEventBehaviour
 {
     public UnityEvent interactStartEvent, interactHoldEvent, interactEndEvent;
 
+    private bool interacting;
+
     private void Update()
     {
-        if(GetColliderCount() <= 0) return;
-
-        if(Input.GetButtonDown("Interact"))
+        if(GetColliderCount() <= 0)
         {
-            interactStartEvent.Invoke();
+            if (interacting)
+            {
+                interacting = false;
+                interactEndEvent.Invoke();
+            }
+            return;
         }
+
+        if (Input.GetButtonDown("Interact"))
+        {
+            interacting = true;
+            interactStartEvent.Invoke();
+            
+        }
+
+        if (!interacting) return;
 
         if(Input.GetButton("Interact"))
         {
@@ -22,6 +35,7 @@ public class InteractionEventBehaviour : TriggerEventBehaviour
 
         if(Input.GetButtonUp("Interact"))
         {
+            interacting = false;
             interactEndEvent.Invoke();
         }
     }
