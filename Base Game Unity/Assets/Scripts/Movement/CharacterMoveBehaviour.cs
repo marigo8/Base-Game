@@ -4,10 +4,12 @@
 public class CharacterMoveBehaviour : MonoBehaviour
 {
     public FloatData moveSpeed, jumpStrength;
+    public IntData maxJumps;
 
     private CharacterController controller;
     private Vector3 inputDirection, motion;
-    private float yVelocity;
+    private int jumps;
+    private bool grounded;
 
     private void Start() 
     {
@@ -19,6 +21,13 @@ public class CharacterMoveBehaviour : MonoBehaviour
         controller.Move(motion * Time.deltaTime);
         if(controller.isGrounded){
             motion.y = 0;
+            jumps = 0;
+            grounded = true;
+        }
+        else if(grounded)
+        {
+            grounded = false;
+            jumps++;
         }
     }
 
@@ -58,6 +67,9 @@ public class CharacterMoveBehaviour : MonoBehaviour
 
     public void Jump()
     {
+        if (jumps >= maxJumps.value) return;
+        if(!grounded) jumps++;
+
         motion.y = jumpStrength.value;
     }
 
