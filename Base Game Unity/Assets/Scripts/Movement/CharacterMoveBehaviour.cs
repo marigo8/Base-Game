@@ -3,11 +3,12 @@
 [RequireComponent(typeof(CharacterController))]
 public class CharacterMoveBehaviour : MonoBehaviour
 {
-    public FloatData moveSpeed, jumpStrength;
+    public FloatData runSpeed, sprintSpeed, walkSpeed, jumpStrength;
     public IntData maxJumps;
 
     private CharacterController controller;
     private Vector3 inputDirection, motion;
+    private float currentSpeed;
     private int jumps;
     private bool grounded;
 
@@ -31,6 +32,14 @@ public class CharacterMoveBehaviour : MonoBehaviour
         }
     }
 
+    public void AllPlayerMovement()
+    {
+        InputMoveSpeed();
+        InputMove();
+        InputJump();
+        Fall();
+    }
+
     public void InputMove()
     {
         var hInput = Input.GetAxis("Horizontal");
@@ -43,11 +52,25 @@ public class CharacterMoveBehaviour : MonoBehaviour
         Move(inputDirection);
     }
 
+    public void InputMoveSpeed()
+    {
+        currentSpeed = runSpeed.value;
+
+        if (Input.GetButton("Walk"))
+        {
+            currentSpeed = walkSpeed.value;
+        }
+        if (Input.GetButton("Sprint"))
+        {
+            currentSpeed = sprintSpeed.value;
+        }
+    }
+
     public void Move(Vector3 direction)
     {
         motion.x = 0;
         motion.z = 0;
-        motion += direction * (moveSpeed.value);
+        motion += direction * currentSpeed;
 
         if(direction.sqrMagnitude > 0.1f){
             transform.rotation = Quaternion.LookRotation(direction);
