@@ -15,7 +15,6 @@ public class TriggerEventBehaviour : EventBehaviour
 
     private void OnTriggerEnter(Collider other) 
     {
-        Debug.Log("AHHHHHHHHHHHHHHHH");
         if(filter != null)
         {
             if(!CheckFilter(other)) return;

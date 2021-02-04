@@ -72,7 +72,7 @@ public class CharacterMoveBehaviour : MonoBehaviour
         motion.z = 0;
         motion += direction * currentSpeed;
 
-        if(direction.sqrMagnitude > 0.1f){
+        if(direction.sqrMagnitude > 0.01f){
             transform.rotation = Quaternion.LookRotation(direction);
             var rotation = transform.eulerAngles;
             rotation.x = 0f;
