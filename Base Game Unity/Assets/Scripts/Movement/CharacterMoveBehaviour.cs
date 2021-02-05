@@ -5,6 +5,7 @@ public class CharacterMoveBehaviour : MonoBehaviour
 {
     public FloatData runSpeed, sprintSpeed, walkSpeed, jumpStrength;
     public IntData maxJumps;
+    public bool inputRun = true, inputSprint = true, inputWalk = true, inputJump = true, gravity = true;
 
     private CharacterController controller;
     private Vector3 inputDirection, motion;
@@ -19,6 +20,20 @@ public class CharacterMoveBehaviour : MonoBehaviour
 
     private void Update()
     {
+
+        if (inputRun)
+        {
+            InputMove();
+        }
+        if (inputJump)
+        {
+            InputJump();
+        }
+        if (gravity)
+        {
+            Fall();
+        }
+
         controller.Move(motion * Time.deltaTime);
         if(controller.isGrounded){
             motion.y = 0;
@@ -32,16 +47,9 @@ public class CharacterMoveBehaviour : MonoBehaviour
         }
     }
 
-    public void AllPlayerMovement()
-    {
-        InputMoveSpeed();
-        InputMove();
-        InputJump();
-        Fall();
-    }
-
     public void InputMove()
     {
+        InputMoveSpeed();
         var hInput = Input.GetAxis("Horizontal");
         var vInput = Input.GetAxis("Vertical");
 
@@ -56,11 +64,11 @@ public class CharacterMoveBehaviour : MonoBehaviour
     {
         currentSpeed = runSpeed.value;
 
-        if (Input.GetButton("Walk"))
+        if (inputWalk && Input.GetButton("Walk"))
         {
             currentSpeed = walkSpeed.value;
         }
-        if (Input.GetButton("Sprint"))
+        if (inputSprint && Input.GetButton("Sprint"))
         {
             currentSpeed = sprintSpeed.value;
         }

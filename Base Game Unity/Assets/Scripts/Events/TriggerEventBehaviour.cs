@@ -5,9 +5,9 @@ public class TriggerEventBehaviour : EventBehaviour
 {
     public ID filter;
 
-    public UnityEvent<Collider> enterEvent, stayEvent, exitEvent;
+    public UnityEvent<GameObject> enterEvent, stayEvent, exitEvent;
 
-    private int colliderCount;
+    protected int colliderCount;
 
     public int GetColliderCount(){
         return colliderCount;
@@ -20,7 +20,7 @@ public class TriggerEventBehaviour : EventBehaviour
             if(!CheckFilter(other)) return;
         }
         colliderCount++;
-        enterEvent.Invoke(other);
+        enterEvent.Invoke(other.gameObject);
     }
 
     private void OnTriggerStay(Collider other) 
@@ -29,7 +29,7 @@ public class TriggerEventBehaviour : EventBehaviour
         {
             if(!CheckFilter(other)) return;
         }
-        stayEvent.Invoke(other);
+        stayEvent.Invoke(other.gameObject);
     }
 
     private void OnTriggerExit(Collider other) 
@@ -39,10 +39,10 @@ public class TriggerEventBehaviour : EventBehaviour
             if(!CheckFilter(other)) return;
         }
         colliderCount--;
-        exitEvent.Invoke(other);
+        exitEvent.Invoke(other.gameObject);
     }
 
-    private bool CheckFilter(Collider other)
+    protected bool CheckFilter(Collider other)
     {
         var idBehaviour = other.GetComponent<IDBehaviour>();
         if(idBehaviour != null)

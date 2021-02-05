@@ -1,18 +1,28 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class InputEventBehaviour : MonoBehaviour
+public class InputEventBehaviour : EventBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    public string button;
+    public UnityEvent inputDownEvent, inputEvent, inputUpEvent;
 
-    // Update is called once per frame
-    void Update()
+    public void Update()
     {
-        
+        if(Input.GetButtonDown(button) || Input.GetKeyDown(button))
+        {
+            inputDownEvent.Invoke();
+        }
+
+        if (Input.GetButton(button) || Input.GetKey(button))
+        {
+            inputEvent.Invoke();
+        }
+
+        if (Input.GetButtonUp(button) || Input.GetKeyUp(button))
+        {
+            inputUpEvent.Invoke();
+        }
     }
 }

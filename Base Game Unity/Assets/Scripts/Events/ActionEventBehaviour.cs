@@ -1,18 +1,53 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine.Events;
 
-public class ActionEventBehaviour : MonoBehaviour
+public class ActionEventBehaviour : EventBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [System.Serializable]
+    public struct ActionEventPair
     {
-        
+        public string name;
+
+        public GameAction action;
+
+        public UnityEvent actionEvent;
+
+        public void Initialize()
+        {
+            if (action == null) return;
+
+            action.action += OnAction;
+        }
+
+        public void Remove()
+        {
+            if (action == null) return;
+
+            action.action -= OnAction;
+        }
+
+        private void OnAction()
+        {
+            actionEvent.Invoke();
+        }
     }
 
-    // Update is called once per frame
-    void Update()
+    public List<ActionEventPair> actionEventPairs = new List<ActionEventPair>(1);
+
+    private void Start()
     {
-        
+        foreach (var pair in actionEventPairs)
+        {
+            pair.Initialize();
+        }
     }
+
+    private void OnDestroy()
+    {
+        foreach (var pair in actionEventPairs)
+        {
+            pair.Remove();
+        }
+    }
+
 }
