@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.Events;
@@ -8,15 +9,30 @@ public class AIMoveBehaviour : MonoBehaviour
 {
     public Transform currentTarget;
     public bool xRayVision;
-    public float visionDistance = 16f;
+    public float visionDistance = 16f, patrolWaitTime;
     public Vector3 visionOffset = Vector3.up;
+
+    public List<Transform> patrolPoints;
+    public UnityEvent patrolBehaviour;
 
     private NavMeshAgent agent;
     private bool targetVisible;
+    private int currentPatrolPointIndex;
 
     private void Start()
     {
         agent = GetComponent<NavMeshAgent>();
+        StartCoroutine(Patrol());
+    }
+
+    private void Update()
+    {
+        if (currentTarget == null) targetVisible = false;
+
+        if(currentTarget == null && !targetVisible)
+        {
+            agent.SetDestination(patrolPoints[currentPatrolPointIndex].position);
+        }
     }
 
     private void FixedUpdate()
@@ -86,19 +102,30 @@ public class AIMoveBehaviour : MonoBehaviour
         agent.Move(direction * Time.deltaTime);
     }
 
-    public void FollowPath(List<Transform> targets)
+    public void NextPatrolPoint()
     {
-
+        currentPatrolPointIndex = (currentPatrolPointIndex + 1) % patrolPoints.Capacity;
     }
 
-    public void FollowPath(NavMeshPath path)
+    public void RandomPatrolPoint()
     {
-
+        currentPatrolPointIndex = Random.Range(0, patrolPoints.Capacity);
     }
 
-    public void RandomPatrol(List<Transform> targets)
+    private IEnumerator Patrol()
     {
+        yield return new WaitUntil(PatrolPointReached);
 
+        yield return new WaitForSeconds(patrolWaitTime);
+
+        patrolBehaviour.Invoke();
+
+        StartCoroutine(Patrol());
+    }
+
+    private bool PatrolPointReached()
+    {
+        return Vector3.Distance(transform.position, patrolPoints[currentPatrolPointIndex].position) < agent.stoppingDistance;
     }
 
     private void OnDrawGizmosSelected()
