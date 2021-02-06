@@ -9,15 +9,16 @@ public class AIMoveBehaviour : MonoBehaviour
 {
     public Transform currentTarget;
     public bool xRayVision;
-    public float visionDistance = 16f, patrolWaitTime;
+    public float visionDistance = 16f, patrolWaitTime, searchTime;
     public Vector3 visionOffset = Vector3.up;
 
     public List<Transform> patrolPoints;
     public UnityEvent patrolBehaviour;
 
     private NavMeshAgent agent;
-    private bool targetVisible;
+    private bool targetVisible = true, chaseTarget = true;
     private int currentPatrolPointIndex;
+    private float searchTimer;
 
     private void Start()
     {
@@ -27,9 +28,30 @@ public class AIMoveBehaviour : MonoBehaviour
 
     private void Update()
     {
-        if (currentTarget == null) targetVisible = false;
+        if (currentTarget == null)
+        {
+            targetVisible = false;
+            chaseTarget = false;
+        }
+        if(!xRayVision)
+        {
+            chaseTarget = true;
+            if (!targetVisible)
+            {
+                searchTimer += Time.deltaTime;
+                if (searchTimer >= searchTime)
+                {
+                    chaseTarget = false;
+                }
+            }
+            else
+            {
+                searchTimer = 0;
+                chaseTarget = true;
+            }
+        }
 
-        if(currentTarget == null && !targetVisible)
+        if (!chaseTarget)
         {
             agent.SetDestination(patrolPoints[currentPatrolPointIndex].position);
         }
@@ -43,28 +65,31 @@ public class AIMoveBehaviour : MonoBehaviour
             var direction = currentTarget.position - transform.position;
             if (Physics.Raycast(transform.position + visionOffset, direction, out var hit, visionDistance))
             {
-                Debug.Log(hit.transform.name);
                 if (hit.transform == currentTarget.transform)
                 {
                     targetVisible = true;
-                    Debug.Log(targetVisible);
                     return;
                 }
             }
             targetVisible = false;
-            Debug.Log(targetVisible);
             return;
+        }
+        else
+        {
+            targetVisible = true;
         }
     }
 
     public void SetTarget(GameObject target)
     {
         currentTarget = target.transform;
+        chaseTarget = true;
     }
 
     public void Untarget()
     {
         currentTarget = null;
+        chaseTarget = false;
     }
 
     public void MoveTowards()
@@ -132,7 +157,7 @@ public class AIMoveBehaviour : MonoBehaviour
     {
         if (xRayVision) return;
         Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position + visionOffset, .1f);
+        Gizmos.DrawSphere(transform.position + visionOffset, .1f);
         Gizmos.DrawWireSphere(transform.position + visionOffset, visionDistance);
     }
 }
