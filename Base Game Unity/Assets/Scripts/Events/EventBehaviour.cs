@@ -11,4 +11,9 @@ public class EventBehaviour : MonoBehaviour
     {
         Debug.Log(message);
     }
+
+    public void DebugGameObject(GameObject obj)
+    {
+        Debug.Log(obj);
+    }
 }

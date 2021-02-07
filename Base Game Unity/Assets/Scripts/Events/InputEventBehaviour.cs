@@ -10,17 +10,17 @@ public class InputEventBehaviour : EventBehaviour
 
     public void Update()
     {
-        if(Input.GetButtonDown(button) || Input.GetKeyDown(button))
+        if(Input.GetButtonDown(button))
         {
             inputDownEvent.Invoke();
         }
 
-        if (Input.GetButton(button) || Input.GetKey(button))
+        if (Input.GetButton(button))
         {
             inputEvent.Invoke();
         }
 
-        if (Input.GetButtonUp(button) || Input.GetKeyUp(button))
+        if (Input.GetButtonUp(button))
         {
             inputUpEvent.Invoke();
         }
